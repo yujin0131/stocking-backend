@@ -1,14 +1,22 @@
-plugins {
-	id 'org.springframework.boot' version '2.4.5'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
-	id 'war'
+buildscript{
+	repositories{
+		mavenCentral()
+	}
+	dependencies {
+		//classpath ' org.springframe
+		classpath 'se.transmode.gradle:gradle-docker:1.2'
+	}
 }
 
+plugins {
+	id 'org.springframework.boot' version '2.5.0'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
+apply plugin: 'docker'
 
 group = 'bis.stock'
 version = '0.0.1-SNAPSHOT'
@@ -19,26 +27,32 @@ repositories {
 }
 
 dependencies {
-	//몰라 얘넨 하래서 한거고
-	compile('org.springframework.boot:spring-boot-starter-web')
-	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+jar {
+	baseName = "bis.stock.back"
+	version = "${version}"
 	
-	//jsp관련 패키지
-	compile('org.apache.tomcat.embed:tomcat-embed-jasper')
-	compile('javax.servlet:jstl:1.2')
-	
-	runtime('com.h2database:h2')
-	runtime('org.springframework.boot:spring-boot-devtools')
-	compileOnly('org.projectlombok:lombok')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	
-	//원래 있던애들
-	//implementation 'org.springframework.boot:spring-boot-starter-web'
-	//providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-	//testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	from {
+		configurations.compile.collect {
+			it.isDirectory() ? it : zipTree(it)
+		}
+	}
 }
 
 test {
 	useJUnitPlatform()
+}
+
+task buildDocker(type: Docker, dependsOn: build) {
+	appplicationName=jar.baseName
+	dockerfile =file('src/main/docker/Dockerfile')
+	doFirst {
+		copy {
+			from jar
+			into stageDir //into ''
+		}
+	}
 }

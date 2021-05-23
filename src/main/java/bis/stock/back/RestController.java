@@ -13,5 +13,4 @@ public class RestController {
 		return "된다";
 
 	}
-
 }

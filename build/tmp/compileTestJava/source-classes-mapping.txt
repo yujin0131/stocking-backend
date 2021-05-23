@@ -1,0 +1,2 @@
+bis/stock/back/StockingBackendApplicationTests.java
+ bis.stock.back.StockingBackendApplicationTests

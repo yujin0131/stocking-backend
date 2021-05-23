@@ -3,7 +3,7 @@ buildscript{
 		mavenCentral()
 	}
 	dependencies {
-		//classpath ' org.springframe
+		classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.19.RELEASE'
 		classpath 'se.transmode.gradle:gradle-docker:1.2'
 	}
 }
@@ -13,12 +13,12 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
-apply plugin: 'java'
+//apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'docker'
 
-group = 'bis.stock'
+group = 'back'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
@@ -31,8 +31,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
+
 jar {
-	baseName = "bis.stock.back"
+	baseName = "back"
 	version = "${version}"
 	
 	from {
@@ -42,17 +43,17 @@ jar {
 	}
 }
 
-test {
-	useJUnitPlatform()
-}
-
-task buildDocker(type: Docker, dependsOn: build) {
-	appplicationName=jar.baseName
-	dockerfile =file('src/main/docker/Dockerfile')
+task buildDocker(type: Docker, dependsOn: build){
+	applicationName=jar.baseName
+	dockerfile=file('src/main/docker/Dockerfile')
 	doFirst {
 		copy {
 			from jar
-			into stageDir //into ''
+			into 'build/docker/'
 		}
 	}
+}
+
+test {
+	useJUnitPlatform()
 }

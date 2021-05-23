@@ -1,26 +1,24 @@
-buildscript{
-	repositories{
-		mavenCentral()
-	}
-	dependencies {
-		classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.19.RELEASE'
-		classpath 'se.transmode.gradle:gradle-docker:1.2'
-	}
-}
-
 plugins {
 	id 'org.springframework.boot' version '2.5.0'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'com.google.cloud.tools.jib' version '1.4.0'
 }
-//apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'docker'
 
-group = 'back'
+group = 'bis.stock'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
+
+bootJar {
+    baseName = 'service-1'
+    version =  '0.1.0'
+}
+jib {
+    to {
+      image = "${bootJar.baseName}:${bootJar.version}"
+      tags = ['latest']
+    }
+}
 
 repositories {
 	mavenCentral()
@@ -29,29 +27,6 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-
-jar {
-	baseName = "back"
-	version = "${version}"
-	
-	from {
-		configurations.compile.collect {
-			it.isDirectory() ? it : zipTree(it)
-		}
-	}
-}
-
-task buildDocker(type: Docker, dependsOn: build){
-	applicationName=jar.baseName
-	dockerfile=file('src/main/docker/Dockerfile')
-	doFirst {
-		copy {
-			from jar
-			into 'build/docker/'
-		}
-	}
 }
 
 test {

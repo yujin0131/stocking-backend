@@ -1,12 +1,12 @@
 spring:
   datasource: #database source 작성
     url: > # localhost 부분 클라우드 ip로 변경. 하지만 배포할 때에는 localhost로 되어 있어야 접근할 수 있음.
-      jdbc:mysql://localhost:3306/stocking?
+      jdbc:mysql://13.209.5.25:3306/stocking?
       useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&
       allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
     # DB 사용자 아이디와 password 작성
     username: root
-    password: bi1234!@
+    password: 1111
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:

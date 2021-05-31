@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 @RestController
@@ -22,16 +25,17 @@ public class AuthController {
     }
 
     // 로그인
-    @PostMapping("login")
-    public ResponseEntity<AccessTokenDto> login(@RequestBody LoginDto loginDto) {
+    @PostMapping("/login")
+    public ResponseEntity<AccessTokenDto> login(@RequestBody LoginDto loginDto,
+                                                HttpServletResponse res) {
 
-        return ResponseEntity.ok(new AccessTokenDto());
+        return ResponseEntity.ok(authService.login(loginDto, res));
     }
 
     // 재발급 (refresh 토큰을 이용해 access 토큰 재발급)
     @PostMapping("reissue")
-    public ResponseEntity<AccessTokenDto> reissue() {
+    public ResponseEntity<AccessTokenDto> reissue(HttpServletRequest req, HttpServletResponse res) {
 
-        return ResponseEntity.ok(new AccessTokenDto());
+        return ResponseEntity.ok(authService.reissue(req, res));
     }
 }

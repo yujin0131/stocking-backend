@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// DB 테이블 생성 테스트용 엔티티 작성
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
@@ -32,40 +31,40 @@ public class User implements UserDetails{
     private String password;
 
     @Column
-    private String username;
+    private String nickname;
 
-//    @Column(name = "created-time")
-//    private LocalDateTime createdTime;
-//
-//    @PrePersist
-//    public void createdAt() {
-//        this.createdTime = LocalDateTime.now();
-//    }
+    @Column(name = "created_time")
+    private LocalDateTime createdTime;
 
+    @PrePersist
+    public void createdAt() {
+        this.createdTime = LocalDateTime.now();
+    }
+
+    @Column
     private Long cash;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private final List<UserRole> roles = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        ArrayList<UserRole> roles = new ArrayList<>();
-        roles.add(this.role);
-        return roles.stream().map(UserRole::toString).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-//        return this.user.getRole().stream()
-//                .map(UserRole::toString)
-//                .map(SimpleGrantedAuthority::new)
-//                .collect(Collectors.toList());
+        return this.roles.stream()
+                .map(UserRole::toString)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return this.email;
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     @Override

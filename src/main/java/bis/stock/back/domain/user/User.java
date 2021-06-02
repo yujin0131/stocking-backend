@@ -33,12 +33,13 @@ public class User implements UserDetails{
     @Column
     private String nickname;
 
-    @Column(name = "created_time")
-    private LocalDateTime createdTime;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
+    // 생성 시간 저장
     @PrePersist
-    public void createdAt() {
-        this.createdTime = LocalDateTime.now();
+    public void createdAtGenerator() {
+        this.createdAt = LocalDateTime.now();
     }
 
     @Column

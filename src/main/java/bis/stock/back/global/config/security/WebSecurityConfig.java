@@ -41,7 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // 요청에 대해 사용권한 체크
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/user/**").hasRole("USER")
                 .anyRequest().permitAll() // 나머지는 누구나 요청 가능 (주식 가격같은 정보는 로그인 안해도 가능)
 
                 .and()

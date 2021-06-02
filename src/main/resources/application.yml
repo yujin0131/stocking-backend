@@ -9,6 +9,12 @@ spring:
     password: 1111
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  cache: # redis 설정
+    type: redis
+  redis:
+    host: 13.209.5.25
+    port: 6379
+
   jpa:
     generate-ddl: true
     database: mysql

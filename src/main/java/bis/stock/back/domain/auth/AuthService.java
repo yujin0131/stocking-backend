@@ -10,12 +10,14 @@ import bis.stock.back.global.config.security.JwtTokenProvider;
 import bis.stock.back.global.exception.ForbiddenException;
 import bis.stock.back.global.exception.NotFoundException;
 import bis.stock.back.global.util.CookieUtil;
+import bis.stock.back.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +33,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieUtil cookieUtil;
     private final UserDetailsService userDetailsService;
+    private final RedisUtil redisUtil;
 
     public Long join(JoinDto joinDto) {
 
@@ -77,7 +80,8 @@ public class AuthService {
          * 이 때 refresh 토큰의 만료시간을 함께 설정해서 만료시간이 끝나면 자동으로 사라지게 함.
          * 이후 access 토큰 재발급때 확인하고 재발급함.
          */
-//        redisUtil.setDataExpire(refreshTokenJwt, member.getEmail(), jwtTokenProvider.REFRESH_TOKEN_VALID_TIME);
+        redisUtil.setDataExpire(refreshTokenJwt, user.getEmail(), jwtTokenProvider.REFRESH_TOKEN_VALID_TIME / 1000);
+
         return AccessTokenDto.builder().accessToken(accessTokenJwt).build();
     }
 
@@ -103,24 +107,30 @@ public class AuthService {
                     .orElseThrow(() -> new IllegalArgumentException("Refresh Token 오류"));
             /**
              * redis에 저장되어있는지 체크하는 부분.
-             * redis 설치 후 수정
              */
-//            String check = redisUtil.getData(refreshTokenJwt);
-//            if(check != null) {
-//                if(check.equals(member.getEmail())) {
-                    // JwtTokenProvider로부터 accessToken 생성
-                    String accessTokenJwt = jwtTokenProvider.createAccessToken(user.getUsername(), user.getRoles());
-                    // 새로운 access 토큰 쿠키를 생성
-                    Cookie newAccessToken = cookieUtil.createCookie("accessToken",
-                            accessTokenJwt, jwtTokenProvider.ACCESS_TOKEN_VALID_TIME, "/");
-                    // http 응답에 실어 보낸다.
-                    res.addCookie(newAccessToken);
-                    // 마지막으로 accessToken을 http body에도 보낸다.
-                    return AccessTokenDto.builder().accessToken(accessTokenJwt).build();
-//                }
-//                redisUtil.deleteData(refreshTokenJwt);
-//            }
+            String check = redisUtil.getData(refreshTokenJwt);
+            if(check == null) {
+                throw new ForbiddenException("Refresh Token이 유효하지 않습니다.");
+            }
+            if(check.equals(user.getEmail())) {
+
+                // jwtTokenProvider로부터 accessToken 생성
+                String accessTokenJwt = jwtTokenProvider.createAccessToken(user.getUsername(), user.getRoles());
+                // 새로운 access 토큰 쿠키를 생성
+                Cookie newAccessToken = cookieUtil.createCookie("accessToken",
+                        accessTokenJwt, jwtTokenProvider.ACCESS_TOKEN_VALID_TIME, "/");
+                // http 응답에 실어 보낸다.
+                res.addCookie(newAccessToken);
+
+                // 마지막으로 accessToken을 http body에도 보낸다.
+                return AccessTokenDto.builder().accessToken(accessTokenJwt).build();
+            } else {
+                // 만약 사용자 정보와 redis에 저장된 값이 같지 않다면 redis 값을 삭제하고 예외처리
+                redisUtil.deleteData(refreshTokenJwt);
+                throw new ForbiddenException("Refresh Token이 유효하지 않습니다.");
+            }
         } else {
+            // refreshToken이 유효하지 않을 때.
             throw new ForbiddenException("Refresh Token이 유효하지 않습니다.");
         }
     }

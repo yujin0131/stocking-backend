@@ -15,7 +15,7 @@ ARG ENVIRONMENT
 ENV SPRING_PROFILES_ACTIVE=${ENVIRONMENT}
 
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","/app.jar","-Dspring.profiles.active=prod"]
 
 #RUN ./gradlew build
 #ARG JAR_FILE=build/libs/*.jar

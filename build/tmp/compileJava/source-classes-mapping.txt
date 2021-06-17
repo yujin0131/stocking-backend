@@ -1,4 +1,0 @@
-bis/stock/back/StockingBackendApplication.java
- bis.stock.back.StockingBackendApplication
-bis/stock/back/RestController.java
- bis.stock.back.RestController

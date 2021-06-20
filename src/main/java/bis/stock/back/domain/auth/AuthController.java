@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 @RestController
@@ -20,7 +21,7 @@ public class AuthController {
     // 회원가입
     @PostMapping("/join")
     public ResponseEntity<Long> join(@RequestBody JoinDto joinDto) {
-
+    	
         return ResponseEntity.ok(authService.join(joinDto));
     }
 

@@ -48,6 +48,10 @@ dependencies {
 	// 스프링 시큐리티, jwt
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+	
+	//json사용
+	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+
 }
 
 test {

@@ -10,11 +10,15 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import bis.stock.back.domain.stock.dto.Stock;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class StockService { //
+public class StockService { 
+	
+	private Stock stock;
+	private StockRepository stockRepository;
 
 	public String stock(String itemcode) {
 		
@@ -70,6 +74,14 @@ public class StockService { //
 
 		return res.toJSONString();
 
+	}
+
+	public String findcode(String name) {
+		System.out.println("오나2");
+		//System.out.println("?? : " +stock.getName());
+	
+		
+		return stockRepository.findByCode(name).toString();
 	}
 
 }

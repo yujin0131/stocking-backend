@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import bis.stock.back.domain.auth.AuthService;
 import bis.stock.back.domain.auth.dto.JoinDto;
+import bis.stock.back.domain.stock.dto.Stock;
 import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
@@ -40,17 +41,17 @@ public class StockController {
 	StockService stockService;
 
 	//db 거치는거에서 오류가 나서 그부분은 아직 머지 안했어요 그냥 stock/code 하면 임시로 삼성전자 코드 넣어서 그렇게만 되게 해뒀습니다.
-	//이부분은 나중에 detail로 갈 때 주식 코드 보내주는 거로 나중에 필요한곳에 옮기면된다,,,
 	@RequestMapping(value="/code") //보려면 일단 /code로 들어가면 됩니다
 	public RedirectView login(RedirectAttributes redirect) {
 
 		//주식 코드 db 만들면 받아오는거로 변경 예정 일단 아직은 임의 코드
 		String code = "005930";
-		//String name = "삼성전자";
-		//System.out.println("여긴");
-		//code = stockService.findcode(name);
-		//System.out.println("오나" + code);
-		//code = "005930";
+		String name = "삼성전자";
+		System.out.println("여긴");
+		List<Stock> list = stockService.findcode();
+		System.out.println("?? " + list.get(0) +" " + list.size());
+		System.out.println("오나" + code);
+		code = "005930";
 		redirect.addAttribute("code", code);
 		return new RedirectView("/stock/detail");
 	}

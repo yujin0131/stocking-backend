@@ -15,13 +15,13 @@ import javax.persistence.Id;
 import bis.stock.back.domain.user.UserRole;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
-@Getter
 @Entity
+@Getter
 public class Stock {
 	
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
 	@Column
@@ -32,6 +32,9 @@ public class Stock {
 	
 	@Column
 	private String category;
+	
+	protected Stock() {	
+	}
 	
     @Builder
     public Stock(String name, String code, String category) {

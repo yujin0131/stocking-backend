@@ -40,29 +40,16 @@ public class StockController {
 	@Autowired
 	StockService stockService;
 
-	//db 거치는거에서 오류가 나서 그부분은 아직 머지 안했어요 그냥 stock/code 하면 임시로 삼성전자 코드 넣어서 그렇게만 되게 해뒀습니다.
-	@RequestMapping(value="/code") //보려면 일단 /code로 들어가면 됩니다
-	public RedirectView login(RedirectAttributes redirect) {
+	// stock/detail?itemname= 하면 나온다.
+	@RequestMapping(value="/detail")
+	public String stock(@RequestParam("itemname") String itemname, RedirectAttributes redirect) {
+		
+		String itemcode = stockService.findcode(itemname);
+		
+		//주식코드가 6자리 앞에 0 붙여서 정보를 안줘서 직접 붙였다.
+		itemcode = String.format("%06d", Integer.parseInt(itemcode)).toString();
 
-		//주식 코드 db 만들면 받아오는거로 변경 예정 일단 아직은 임의 코드
-		String code = "005930";
-		String name = "삼성전자";
-		System.out.println("여긴");
-		List<Stock> list = stockService.findcode();
-		System.out.println("?? " + list.get(0) +" " + list.size());
-		System.out.println("오나" + code);
-		code = "005930";
-		redirect.addAttribute("code", code);
-		return new RedirectView("/stock/detail");
-	}
-
-	//일단 아직 수정예정,,
-	@RequestMapping(value = "/detail")
-	@ResponseBody
-	public String stock(@RequestParam("code") String itemcode){
-
-
-		return stockService.stock(itemcode);
+		return stockService.stock(itemcode, itemname);
 	}
 
 

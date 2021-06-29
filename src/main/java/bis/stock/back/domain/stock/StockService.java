@@ -23,13 +23,20 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class StockService { 
 
-	private Stock stock;
 	private StockRepository stockRepository;
 
 	@PersistenceContext
 	private EntityManager em;
 
-	public String stock(String itemcode) {
+	public String findcode(String itemname) {
+
+		return em.createQuery("select s from Stock s where s.name = :name", Stock.class)
+				.setParameter("name", itemname)
+				.getSingleResult().getCode();
+	}
+
+
+	public String stock(String itemcode, String itemname) {
 
 		String line ="";
 		String result = "";
@@ -45,6 +52,7 @@ public class StockService {
 			while((line = br.readLine())!=null) {
 				result = result.concat(line);
 			}
+			
 			JSONParser parser = new JSONParser();
 			JSONObject obj = (JSONObject) parser.parse(result);
 			System.out.println(obj.toString());
@@ -55,15 +63,12 @@ public class StockService {
 			String now = obj.get("now").toString(); //현재가
 			String diff = obj.get("diff").toString();//등락폭
 
-			//			String pbr = obj.get("pbr").toString();//주가순자산비율
-			//			String risefall = obj.get("risefall").toString();
-			//			String marketSum = obj.get("marketSum").toString();
-			//			String eps = obj.get("eps").toString();//주당 순 이익
-			//			String per = obj.get("per").toString();//주가 수익 비율
-			//			String quant = obj.get("quant").toString();//거래량
-
-
-			String itemname = "삼성전자";//db로 받아와야 해서 아직은 임의로 넣음
+//			String pbr = obj.get("pbr").toString();//주가순자산비율
+//			String risefall = obj.get("risefall").toString();
+//			String marketSum = obj.get("marketSum").toString();
+//			String eps = obj.get("eps").toString();//주당 순 이익
+//			String per = obj.get("per").toString();//주가 수익 비율
+//			String quant = obj.get("quant").toString();//거래량
 
 			res.put("itemcode", itemcode);
 			res.put("itemname", itemname);
@@ -73,28 +78,14 @@ public class StockService {
 			res.put("low", low);
 			res.put("rate", rate);
 			res.put("amount", amount);
-			System.out.println(res.toString());
 
 			br.close();
 		}catch (Exception e) {
 
 		}
 
-
 		return res.toJSONString();
 
-	}
-
-	public List<Stock> findAll(){
-		return em.createQuery("select s from Stock s" , Stock.class)
-				.getResultList();
-	}
-
-	public List<Stock> findcode() {
-
-		System.out.println("과연222");
-		return em.createQuery("select s from Stock s" , Stock.class)
-				.getResultList();
 	}
 
 

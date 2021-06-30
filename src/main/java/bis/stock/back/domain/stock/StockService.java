@@ -27,6 +27,12 @@ public class StockService {
 
 	@PersistenceContext
 	private EntityManager em;
+	
+	public List<Stock> totalList() {
+
+		return em.createQuery("select s from Stock s", Stock.class)
+				.getResultList();
+	}
 
 	public String findcode(String itemname) {
 
@@ -35,8 +41,7 @@ public class StockService {
 				.getSingleResult().getCode();
 	}
 
-
-	public String stock(String itemcode, String itemname) {
+	public String detail(String itemcode, String itemname) {
 
 		String line ="";
 		String result = "";
